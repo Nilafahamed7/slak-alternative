@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { LogOut, MessageSquare, Send, Clock, Edit3, Trash2, Search, Plus, Hash } from 'lucide-react'
+import { LogOut, MessageSquare, Send, Clock, Hash } from 'lucide-react'
 import { 
   getChannels, 
   getChannelHistory, 
@@ -19,8 +19,6 @@ const Dashboard = ({ onLogout }) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState('send')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState([])
   const [newChannelId, setNewChannelId] = useState('')
 
   useEffect(() => {
@@ -41,13 +39,11 @@ const Dashboard = ({ onLogout }) => {
       if (response.channels && response.channels.length > 0) {
         setSelectedChannel(response.channels[0].id)
       } else {
-        // If no channels loaded, set a default channel ID for testing
         setSelectedChannel('general')
-        setError('No channels found. Using default channel. You can manually enter a channel ID.')
+        setError('No channels found. Using default channel.')
       }
     } catch (err) {
-      setError('Failed to load channels: ' + err.message + '. You can manually enter a channel ID.')
-      // Set a default channel for testing
+      setError('Failed to load channels. Using default channel.')
       setSelectedChannel('general')
     } finally {
       setLoading(false)
@@ -120,57 +116,16 @@ const Dashboard = ({ onLogout }) => {
     }
   }
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      setSearchResults([])
-      return
-    }
-
-    try {
-      setLoading(true)
-      // Search through messages in the current channel
-      const response = await getChannelHistory(selectedChannel, 100)
-      const filteredMessages = response.messages.filter(msg => 
-        msg.text && msg.text.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      setSearchResults(filteredMessages)
-    } catch (err) {
-      setError('Search failed: ' + err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleAddChannel = async () => {
-    if (!newChannelId.trim()) {
-      setError('Please enter a channel ID or name')
-      return
-    }
-
-    try {
-      setLoading(true)
-      // Test if the channel is accessible by trying to get its history
-      await getChannelHistory(newChannelId.trim(), 1)
-      
-      // If successful, add to selected channel
+  const handleAddChannel = () => {
+    if (newChannelId.trim()) {
       setSelectedChannel(newChannelId.trim())
       setNewChannelId('')
-      setError('')
-      
-      // Reload channels to see if it appears in the list
-      await loadChannels()
-    } catch (err) {
-      setError(`Cannot access channel "${newChannelId}": ${err.message}. Make sure the bot is invited to this channel.`)
-    } finally {
-      setLoading(false)
     }
   }
 
   const tabs = [
     { id: 'send', label: 'Send Message', icon: Send },
     { id: 'schedule', label: 'Schedule Message', icon: Clock },
-    { id: 'search', label: 'Search Messages', icon: Search },
-    { id: 'manage', label: 'Manage Messages', icon: Edit3 },
     { id: 'channels', label: 'Manage Channels', icon: Hash }
   ]
 
@@ -285,51 +240,30 @@ const Dashboard = ({ onLogout }) => {
                   />
                 )}
 
-                {activeTab === 'search' && (
+                {activeTab === 'channels' && (
                   <div className="space-y-4">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Add Channel
+                    </h3>
                     <div className="flex gap-4">
                       <input
                         type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search messages..."
+                        value={newChannelId}
+                        onChange={(e) => setNewChannelId(e.target.value)}
+                        placeholder="Enter channel ID or name (e.g., #general, C1234567890)"
                         className="flex-1 input-field"
                       />
                       <button
-                        onClick={handleSearch}
+                        onClick={handleAddChannel}
                         className="btn-primary"
                         disabled={loading}
                       >
-                        Search
+                        Add Channel
                       </button>
                     </div>
-                    {searchResults.length > 0 && (
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-3">
-                          Search Results ({searchResults.length})
-                        </h3>
-                        <MessageList
-                          messages={searchResults}
-                          onEdit={handleEditMessage}
-                          onDelete={handleDeleteMessage}
-                          loading={loading}
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {activeTab === 'manage' && (
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">
-                      Recent Messages
-                    </h3>
-                    <MessageList
-                      messages={messages}
-                      onEdit={handleEditMessage}
-                      onDelete={handleDeleteMessage}
-                      loading={loading}
-                    />
+                    <p className="text-sm text-gray-600">
+                      Enter a channel ID (starts with C) or channel name (starts with #)
+                    </p>
                   </div>
                 )}
               </div>

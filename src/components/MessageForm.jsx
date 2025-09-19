@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
-import { Send, Clock, Paperclip, Smile } from 'lucide-react'
+import { Send, Clock } from 'lucide-react'
 import { format } from 'date-fns'
 
 const MessageForm = ({ onSubmit, loading, scheduled = false }) => {
   const [text, setText] = useState('')
   const [postAt, setPostAt] = useState('')
-  const [threadTs, setThreadTs] = useState('')
-  const [blocks, setBlocks] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -15,19 +13,6 @@ const MessageForm = ({ onSubmit, loading, scheduled = false }) => {
     const messageData = {
       text: text.trim(),
       options: {}
-    }
-
-    if (threadTs.trim()) {
-      messageData.options.thread_ts = threadTs.trim()
-    }
-
-    if (blocks.trim()) {
-      try {
-        messageData.options.blocks = JSON.parse(blocks.trim())
-      } catch (err) {
-        alert('Invalid JSON in blocks field')
-        return
-      }
     }
 
     if (scheduled) {
@@ -86,49 +71,8 @@ const MessageForm = ({ onSubmit, loading, scheduled = false }) => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-        <div>
-          <label htmlFor="threadTs" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-            Thread Timestamp (optional)
-          </label>
-          <input
-            type="text"
-            id="threadTs"
-            value={threadTs}
-            onChange={(e) => setThreadTs(e.target.value)}
-            placeholder="e.g., 1234567890.123456"
-            className="input-field text-sm"
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            Reply to a specific message thread
-          </p>
-        </div>
-
-        <div>
-          <label htmlFor="blocks" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-            Blocks JSON (optional)
-          </label>
-          <textarea
-            id="blocks"
-            value={blocks}
-            onChange={(e) => setBlocks(e.target.value)}
-            placeholder='[{"type": "section", "text": {"type": "mrkdwn", "text": "Hello!"}}]'
-            rows={2}
-            className="input-field text-sm font-mono resize-none"
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            Rich formatting using Slack blocks
-          </p>
-        </div>
-      </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-between pt-3 sm:pt-4 border-t border-vibrant-purple/20 space-y-3 sm:space-y-0">
-        <div className="flex items-center space-x-2 text-xs sm:text-sm text-vibrant-purple">
-          <Paperclip className="h-3 w-3 sm:h-4 sm:w-4" />
-          <Smile className="h-3 w-3 sm:h-4 sm:w-4" />
-          <span className="hidden sm:inline">Rich formatting available</span>
-          <span className="sm:hidden">Rich formatting</span>
-        </div>
         
         <button
           type="submit"

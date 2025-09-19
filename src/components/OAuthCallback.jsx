@@ -6,25 +6,16 @@ import { exchangeCodeForToken, clearOAuthState } from '../services/slackService'
 const OAuthCallback = ({ onLogin }) => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const [status, setStatus] = useState('processing') // processing, success, error
+  const [status, setStatus] = useState('processing')
   const [error, setError] = useState('')
-  const [isProcessing, setIsProcessing] = useState(false)
 
   useEffect(() => {
     const handleOAuthCallback = async () => {
-      // Prevent multiple simultaneous processing
-      if (isProcessing) {
-        return
-      }
-      
-      setIsProcessing(true)
-      
       try {
         const code = searchParams.get('code')
         const state = searchParams.get('state')
         const error = searchParams.get('error')
 
-        // Check for OAuth errors first
         if (error) {
           setError(`OAuth error: ${error}`)
           setStatus('error')
@@ -32,7 +23,6 @@ const OAuthCallback = ({ onLogin }) => {
           return
         }
 
-        // Check for missing code
         if (!code) {
           setError('Missing authorization code')
           setStatus('error')
@@ -40,55 +30,20 @@ const OAuthCallback = ({ onLogin }) => {
           return
         }
 
-        // Check if we've already processed this code
-        const processedCode = localStorage.getItem('processed_oauth_code')
-        if (processedCode === code) {
-          setError('OAuth code has already been processed. Please try logging in again.')
-          setStatus('error')
-          setTimeout(() => navigate('/login'), 3000)
-          return
-        }
-
-        // If we have a valid code, show success immediately (optimistic UI)
         setStatus('success')
-        
-        // Exchange code for access token
         const tokenData = await exchangeCodeForToken(code, state)
-        
-        if (!tokenData || !tokenData.access_token) {
-          throw new Error('Invalid token response from Slack')
-        }
-        
-        // Call onLogin with the access token
         onLogin(tokenData.access_token)
-        
-        // Redirect to dashboard very quickly
-        setTimeout(() => {
-          navigate('/dashboard')
-        }, 500)
+        setTimeout(() => navigate('/dashboard'), 500)
 
       } catch (err) {
-        // Handle specific error types
-        let errorMessage = err.message
-        if (err.message.includes('invalid_code') || err.message.includes('already been used') || err.message.includes('expired')) {
-          errorMessage = 'OAuth code has expired or been used. This is normal - please try logging in again.'
-        }
-        
-        setError(errorMessage)
+        setError('OAuth code has expired. Please try logging in again.')
         setStatus('error')
-        
-        // Redirect to login after error with a shorter delay
-        setTimeout(() => {
-          navigate('/login')
-        }, 2000)
-      } finally {
-        setIsProcessing(false)
+        setTimeout(() => navigate('/login'), 2000)
       }
     }
 
-    // Start immediately without delay
     handleOAuthCallback()
-  }, [searchParams, onLogin, navigate, isProcessing])
+  }, [searchParams, onLogin, navigate])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-vibrant-purple via-vibrant-pink to-vibrant-blue flex items-center justify-center p-4">

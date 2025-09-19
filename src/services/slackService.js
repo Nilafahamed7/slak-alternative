@@ -62,21 +62,9 @@ export const getOAuthConfig = () => {
 export const clearOAuthState = () => {
   localStorage.removeItem('oauth_state')
   localStorage.removeItem('processed_oauth_code')
-  localStorage.removeItem('oauth_retry_count')
-}
-
-export const getOAuthRetryCount = () => {
-  return parseInt(localStorage.getItem('oauth_retry_count') || '0')
-}
-
-export const incrementOAuthRetryCount = () => {
-  const count = getOAuthRetryCount() + 1
-  localStorage.setItem('oauth_retry_count', count.toString())
-  return count
 }
 
 export const initiateOAuth = () => {
-  // Clear any existing OAuth state first
   clearOAuthState()
   
   const config = getOAuthConfig()
@@ -87,107 +75,37 @@ export const initiateOAuth = () => {
     state: config.state
   })
   
-  // Store state for verification
   localStorage.setItem('oauth_state', config.state)
-  
-  // Redirect to Slack OAuth
   window.location.href = `${SLACK_OAUTH_URL}?${params.toString()}`
 }
 
 export const exchangeCodeForToken = async (code, state) => {
-  const storedState = localStorage.getItem('oauth_state')
-  
-  // More flexible state validation - only check if we have a stored state
-  if (storedState && state !== storedState) {
-    // State mismatch, but continue with OAuth flow
-  }
-  
   const config = getOAuthConfig()
   
-  // Check if we've already processed this code
-  const processedCode = localStorage.getItem('processed_oauth_code')
-  if (processedCode === code) {
-    throw new Error('OAuth code has already been used. Please try logging in again.')
-  }
-  
-  // Mark this code as being processed
-  localStorage.setItem('processed_oauth_code', code)
-  
-  try {
-    // Use proxy for OAuth token exchange
-    const response = await fetch('/api/slack-proxy', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        endpoint: '/oauth.v2.access',
-        code: code,
-        redirectUri: config.redirectUri
-      })
-    })
-    
-    const data = await response.json()
-    
-    if (!data.ok) {
-      // Clean up processed code on error
-      localStorage.removeItem('processed_oauth_code')
-      
-      if (data.error === 'invalid_code') {
-        throw new Error('OAuth code has expired. Please try logging in again.')
-      }
-      throw new Error(data.error || 'OAuth token exchange failed')
-    }
-    
-    // Store tokens
-    localStorage.setItem('slack_access_token', data.access_token)
-    if (data.refresh_token) {
-      localStorage.setItem('slack_refresh_token', data.refresh_token)
-    }
-    
-    // Clean up
-    localStorage.removeItem('oauth_state')
-    localStorage.removeItem('processed_oauth_code')
-    
-    return data
-  } catch (error) {
-    // Clean up on any error
-    localStorage.removeItem('processed_oauth_code')
-    throw error
-  }
-}
-
-export const refreshAccessToken = async () => {
-  const refreshToken = getRefreshToken()
-  if (!refreshToken) {
-    throw new Error('No refresh token available')
-  }
-  
-  const response = await fetch(`${BASE_URL}/oauth.v2.access`, {
+  const response = await fetch('/api/slack-proxy', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json',
     },
-    body: new URLSearchParams({
-      client_id: getOAuthConfig().clientId,
-      client_secret: import.meta.env.VITE_SLACK_CLIENT_SECRET || 'your-client-secret',
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken
+    body: JSON.stringify({
+      endpoint: '/oauth.v2.access',
+      code: code,
+      redirectUri: config.redirectUri
     })
   })
   
   const data = await response.json()
   
   if (!data.ok) {
-    throw new Error(data.error || 'Token refresh failed')
+    throw new Error('OAuth code has expired. Please try logging in again.')
   }
   
-  // Update stored tokens
   localStorage.setItem('slack_access_token', data.access_token)
   if (data.refresh_token) {
     localStorage.setItem('slack_refresh_token', data.refresh_token)
   }
   
+  localStorage.removeItem('oauth_state')
   return data
 }
 
@@ -257,29 +175,8 @@ export const deleteMessage = async (channel, ts) => {
 // Channel operations
 export const getChannels = async () => {
   try {
-    // Try multiple approaches to get channels
-    const approaches = [
-      '/conversations.list?types=public_channel,private_channel&limit=100',
-      '/conversations.list?types=public_channel&limit=100',
-      '/conversations.list?limit=100'
-    ]
-    
-    for (const endpoint of approaches) {
-      try {
-        const response = await makeRequest(endpoint)
-        if (response.channels && response.channels.length > 0) {
-          return response
-        }
-      } catch (err) {
-        console.log(`Failed with endpoint ${endpoint}:`, err.message)
-        continue
-      }
-    }
-    
-    // If all approaches fail, return empty array
-    return { channels: [] }
+    return await makeRequest('/conversations.list?types=public_channel,private_channel&limit=100')
   } catch (error) {
-    console.error('All channel fetch attempts failed:', error)
     return { channels: [] }
   }
 }
@@ -288,24 +185,3 @@ export const getChannelHistory = async (channel, limit = 50) => {
   return makeRequest(`/conversations.history?channel=${channel}&limit=${limit}`)
 }
 
-// User operations
-export const getUsers = async () => {
-  return makeRequest('/users.list')
-}
-
-// Scheduled messages
-export const getScheduledMessages = async (channel) => {
-  return makeRequest(`/chat.scheduledMessages.list?channel=${channel}`)
-}
-
-export const deleteScheduledMessage = async (channel, scheduled_message_id) => {
-  const payload = {
-    channel,
-    scheduled_message_id
-  }
-
-  return makeRequest('/chat.deleteScheduledMessage', {
-    method: 'POST',
-    body: JSON.stringify(payload)
-  })
-}
