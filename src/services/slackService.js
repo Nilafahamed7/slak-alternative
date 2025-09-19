@@ -38,7 +38,7 @@ export const getOAuthConfig = () => {
   return {
     clientId: import.meta.env.VITE_SLACK_CLIENT_ID || 'your-client-id',
     redirectUri: `${window.location.origin}/oauth/callback`,
-    scope: 'chat:write,channels:read,groups:read,im:read,mpim:read,users:read,conversations.history:read',
+    scope: 'chat:write,channels:read,groups:read,im:read,mpim:read,users:read',
     state: Math.random().toString(36).substring(7)
   }
 }

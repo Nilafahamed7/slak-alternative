@@ -41,13 +41,11 @@ In your app settings, go to "OAuth & Permissions":
 
 **Bot Token Scopes:**
 - `chat:write` - Send messages
-- `chat:write.public` - Send to public channels
 - `channels:read` - List public channels
 - `groups:read` - List private channels
 - `im:read` - List direct messages
 - `mpim:read` - List group direct messages
 - `users:read` - List users
-- `conversations.history:read` - Read message history
 
 ### 3. Get OAuth Credentials
 
