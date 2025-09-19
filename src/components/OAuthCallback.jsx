@@ -60,7 +60,16 @@ const OAuthCallback = ({ onLogin }) => {
 
       } catch (err) {
         console.error('OAuth callback error:', err)
-        setError(err.message)
+        
+        // Handle specific error types
+        let errorMessage = err.message
+        if (err.message.includes('invalid_code') || err.message.includes('already been used')) {
+          errorMessage = 'OAuth code has expired or been used. Please try logging in again.'
+        } else if (err.message.includes('expired')) {
+          errorMessage = 'OAuth session has expired. Please try logging in again.'
+        }
+        
+        setError(errorMessage)
         setStatus('error')
         
         // Redirect to login after error
@@ -122,9 +131,17 @@ const OAuthCallback = ({ onLogin }) => {
               <p className="text-gray-600 mb-4">
                 {error || 'An error occurred during authentication.'}
               </p>
-              <p className="text-sm text-gray-500">
-                Redirecting to login page...
-              </p>
+              <div className="space-y-3">
+                <button
+                  onClick={() => navigate('/login')}
+                  className="btn-primary w-full"
+                >
+                  Try Again
+                </button>
+                <p className="text-sm text-gray-500">
+                  Or wait to be redirected automatically...
+                </p>
+              </div>
             </>
           )}
         </div>

@@ -85,35 +85,57 @@ export const exchangeCodeForToken = async (code, state) => {
   
   const config = getOAuthConfig()
   
-  // Use proxy for OAuth token exchange
-  const response = await fetch('/api/slack-proxy', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      endpoint: '/oauth.v2.access',
-      code: code,
-      redirectUri: config.redirectUri
+  // Check if we've already processed this code
+  const processedCode = localStorage.getItem('processed_oauth_code')
+  if (processedCode === code) {
+    throw new Error('OAuth code has already been used. Please try logging in again.')
+  }
+  
+  // Mark this code as being processed
+  localStorage.setItem('processed_oauth_code', code)
+  
+  try {
+    // Use proxy for OAuth token exchange
+    const response = await fetch('/api/slack-proxy', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        endpoint: '/oauth.v2.access',
+        code: code,
+        redirectUri: config.redirectUri
+      })
     })
-  })
-  
-  const data = await response.json()
-  
-  if (!data.ok) {
-    throw new Error(data.error || 'OAuth token exchange failed')
+    
+    const data = await response.json()
+    
+    if (!data.ok) {
+      // Clean up processed code on error
+      localStorage.removeItem('processed_oauth_code')
+      
+      if (data.error === 'invalid_code') {
+        throw new Error('OAuth code has expired or been used. Please try logging in again.')
+      }
+      throw new Error(data.error || 'OAuth token exchange failed')
+    }
+    
+    // Store tokens
+    localStorage.setItem('slack_access_token', data.access_token)
+    if (data.refresh_token) {
+      localStorage.setItem('slack_refresh_token', data.refresh_token)
+    }
+    
+    // Clean up
+    localStorage.removeItem('oauth_state')
+    localStorage.removeItem('processed_oauth_code')
+    
+    return data
+  } catch (error) {
+    // Clean up on any error
+    localStorage.removeItem('processed_oauth_code')
+    throw error
   }
-  
-  // Store tokens
-  localStorage.setItem('slack_access_token', data.access_token)
-  if (data.refresh_token) {
-    localStorage.setItem('slack_refresh_token', data.refresh_token)
-  }
-  
-  // Clean up
-  localStorage.removeItem('oauth_state')
-  
-  return data
 }
 
 export const refreshAccessToken = async () => {
