@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { CheckCircle, XCircle, Loader } from 'lucide-react'
-import { exchangeCodeForToken } from '../services/slackService'
+import { exchangeCodeForToken, clearOAuthState } from '../services/slackService'
 
 const OAuthCallback = ({ onLogin }) => {
   const [searchParams] = useSearchParams()
@@ -86,19 +86,17 @@ const OAuthCallback = ({ onLogin }) => {
         
         // Handle specific error types
         let errorMessage = err.message
-        if (err.message.includes('invalid_code') || err.message.includes('already been used')) {
-          errorMessage = 'OAuth code has expired or been used. Please try logging in again.'
-        } else if (err.message.includes('expired')) {
-          errorMessage = 'OAuth session has expired. Please try logging in again.'
+        if (err.message.includes('invalid_code') || err.message.includes('already been used') || err.message.includes('expired')) {
+          errorMessage = 'OAuth code has expired or been used. This is normal - please try logging in again.'
         }
         
         setError(errorMessage)
         setStatus('error')
         
-        // Redirect to login after error
+        // Redirect to login after error with a shorter delay
         setTimeout(() => {
           navigate('/login')
-        }, 3000)
+        }, 2000)
       } finally {
         setIsProcessing(false)
       }
@@ -158,10 +156,13 @@ const OAuthCallback = ({ onLogin }) => {
               </p>
               <div className="space-y-3">
                 <button
-                  onClick={() => navigate('/login')}
+                  onClick={() => {
+                    clearOAuthState()
+                    navigate('/login')
+                  }}
                   className="btn-primary w-full"
                 >
-                  Try Again
+                  Try Again (Clear OAuth State)
                 </button>
                 <p className="text-sm text-gray-500">
                   Or wait to be redirected automatically...

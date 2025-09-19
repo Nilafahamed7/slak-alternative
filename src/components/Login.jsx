@@ -121,6 +121,12 @@ const Login = ({ onLogin }) => {
                 <p className="text-gray-600 mb-4">
                   Connect your Slack workspace securely using OAuth
                 </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                  <p className="text-sm text-blue-700">
+                    <strong>Note:</strong> OAuth codes expire quickly. If you get an "expired code" error, 
+                    just click "Try Again" - this is normal!
+                  </p>
+                </div>
                 <button
                   onClick={handleOAuthLogin}
                   disabled={loading}

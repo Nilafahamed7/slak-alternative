@@ -62,7 +62,18 @@ export const getOAuthConfig = () => {
 export const clearOAuthState = () => {
   localStorage.removeItem('oauth_state')
   localStorage.removeItem('processed_oauth_code')
+  localStorage.removeItem('oauth_retry_count')
   console.log('Cleared OAuth state')
+}
+
+export const getOAuthRetryCount = () => {
+  return parseInt(localStorage.getItem('oauth_retry_count') || '0')
+}
+
+export const incrementOAuthRetryCount = () => {
+  const count = getOAuthRetryCount() + 1
+  localStorage.setItem('oauth_retry_count', count.toString())
+  return count
 }
 
 export const initiateOAuth = () => {
@@ -135,8 +146,9 @@ export const exchangeCodeForToken = async (code, state) => {
       localStorage.removeItem('processed_oauth_code')
       
       if (data.error === 'invalid_code') {
-        console.error('Invalid code error from Slack')
-        throw new Error('OAuth code has expired or been used. Please try logging in again.')
+        console.error('Invalid code error from Slack - code expired or used')
+        // Don't throw error immediately, try to redirect to login instead
+        throw new Error('OAuth code has expired. Please try logging in again.')
       }
       throw new Error(data.error || 'OAuth token exchange failed')
     }
