@@ -18,17 +18,36 @@ const OAuthCallback = ({ onLogin }) => {
 
         console.log('OAuth callback params:', { code: code ? 'present' : 'missing', state: state ? 'present' : 'missing', error })
 
+        // Check for OAuth errors first
         if (error) {
-          throw new Error(`OAuth error: ${error}`)
+          console.error('OAuth error from Slack:', error)
+          setError(`OAuth error: ${error}`)
+          setStatus('error')
+          setTimeout(() => navigate('/login'), 3000)
+          return
         }
 
+        // Check for missing code
         if (!code) {
-          throw new Error('Missing authorization code')
+          console.error('Missing authorization code')
+          setError('Missing authorization code')
+          setStatus('error')
+          setTimeout(() => navigate('/login'), 3000)
+          return
         }
+
+        // Add a small delay to prevent flash
+        await new Promise(resolve => setTimeout(resolve, 500))
 
         // Exchange code for access token
+        console.log('Exchanging code for token...')
         const tokenData = await exchangeCodeForToken(code, state)
         
+        if (!tokenData || !tokenData.access_token) {
+          throw new Error('Invalid token response from Slack')
+        }
+
+        console.log('Token exchange successful')
         setStatus('success')
         
         // Call onLogin with the access token
@@ -37,7 +56,7 @@ const OAuthCallback = ({ onLogin }) => {
         // Redirect to dashboard after a short delay
         setTimeout(() => {
           navigate('/dashboard')
-        }, 2000)
+        }, 1500)
 
       } catch (err) {
         console.error('OAuth callback error:', err)
@@ -51,7 +70,9 @@ const OAuthCallback = ({ onLogin }) => {
       }
     }
 
-    handleOAuthCallback()
+    // Add a small delay before starting to prevent race conditions
+    const timer = setTimeout(handleOAuthCallback, 100)
+    return () => clearTimeout(timer)
   }, [searchParams, onLogin, navigate])
 
   return (
@@ -69,6 +90,9 @@ const OAuthCallback = ({ onLogin }) => {
               <p className="text-gray-600">
                 Please wait while we complete your Slack authentication...
               </p>
+              <div className="mt-4 text-sm text-gray-500">
+                This may take a few seconds...
+              </div>
             </>
           )}
 
