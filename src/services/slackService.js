@@ -98,7 +98,8 @@ export const exchangeCodeForToken = async (code, state) => {
         client_secret: import.meta.env.VITE_SLACK_CLIENT_SECRET || 'your-client-secret',
         code: code,
         redirect_uri: config.redirectUri
-      }
+      },
+      contentType: 'form'
     })
   })
   

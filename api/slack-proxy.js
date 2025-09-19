@@ -18,7 +18,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing endpoint' })
     }
 
-    if (!token) {
+    // For OAuth token exchange, we don't need a token in the request
+    if (!token && endpoint !== '/oauth.v2.access') {
       return res.status(400).json({ error: 'Missing token' })
     }
 
