@@ -152,28 +152,32 @@ const Dashboard = ({ onLogout }) => {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-14 sm:h-16">
             <div className="flex items-center">
-              <MessageSquare className="h-8 w-8 text-slack-purple mr-3" />
-              <h1 className="text-xl font-semibold text-gray-900">Slack Alternative</h1>
+              <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-slack-purple mr-2 sm:mr-3" />
+              <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
+                <span className="hidden sm:inline">Slack Alternative</span>
+                <span className="sm:hidden">Slack</span>
+              </h1>
             </div>
             <button
               onClick={onLogout}
-              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors text-sm sm:text-base px-2 sm:px-3 py-1 sm:py-2"
             >
-              <LogOut className="h-5 w-5 mr-2" />
-              Logout
+              <LogOut className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Logout</span>
+              <span className="sm:hidden">Exit</span>
             </button>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="card p-4">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Channels</h2>
+            <div className="card p-3 sm:p-4">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Channels</h2>
               <ChannelSelector
                 channels={channels}
                 selectedChannel={selectedChannel}
@@ -182,8 +186,8 @@ const Dashboard = ({ onLogout }) => {
               />
               
               {/* Manual Channel Input */}
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <label htmlFor="manualChannel" className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
+                <label htmlFor="manualChannel" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                   Or enter channel ID manually:
                 </label>
                 <input
@@ -192,7 +196,7 @@ const Dashboard = ({ onLogout }) => {
                   value={selectedChannel}
                   onChange={(e) => setSelectedChannel(e.target.value)}
                   placeholder="e.g., general, C1234567890"
-                  className="input-field text-sm"
+                  className="input-field text-xs sm:text-sm"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Use channel name (general) or channel ID (C1234567890)
@@ -206,21 +210,22 @@ const Dashboard = ({ onLogout }) => {
             <div className="card">
               {/* Tabs */}
               <div className="border-b border-gray-200">
-                <nav className="flex space-x-8 px-6">
+                <nav className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 overflow-x-auto">
                   {tabs.map((tab) => {
                     const Icon = tab.icon
                     return (
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                        className={`flex items-center py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
                           activeTab === tab.id
                             ? 'border-slack-purple text-slack-purple'
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                         }`}
                       >
-                        <Icon className="h-4 w-4 mr-2" />
-                        {tab.label}
+                        <Icon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">{tab.label}</span>
+                        <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
                       </button>
                     )
                   })}
@@ -228,10 +233,10 @@ const Dashboard = ({ onLogout }) => {
               </div>
 
               {/* Tab Content */}
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {error && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                    <p className="text-red-600">{error}</p>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                    <p className="text-red-600 text-xs sm:text-sm">{error}</p>
                   </div>
                 )}
 

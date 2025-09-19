@@ -39,7 +39,6 @@ const Login = ({ onLogin }) => {
       clientId: import.meta.env.VITE_SLACK_CLIENT_ID ? 'present' : 'missing'
     }
     
-    console.log('OAuth Debug Info:', debugInfo)
     alert(`OAuth Debug Info:\n${JSON.stringify(debugInfo, null, 2)}`)
   }
 
@@ -76,15 +75,15 @@ const Login = ({ onLogin }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slack-purple to-purple-600 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slack-purple to-purple-600 flex items-center justify-center p-4 sm:p-6">
       <div className="max-w-md w-full">
-        <div className="card p-8">
+        <div className="card p-6 sm:p-8">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <MessageSquare className="h-12 w-12 text-slack-purple" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Slack Alternative</h1>
-            <p className="text-gray-600">Connect to your Slack workspace</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Slack Alternative</h1>
+            <p className="text-sm sm:text-base text-gray-600">Connect to your Slack workspace</p>
           </div>
 
           {/* Authentication Method Toggle */}
@@ -122,7 +121,7 @@ const Login = ({ onLogin }) => {
                   Connect your Slack workspace securely using OAuth
                 </p>
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                  <p className="text-sm text-blue-700">
+                  <p className="text-xs sm:text-sm text-blue-700">
                     <strong>Note:</strong> OAuth codes expire quickly. If you get an "expired code" error, 
                     just click "Try Again" - this is normal!
                   </p>
@@ -149,14 +148,14 @@ const Login = ({ onLogin }) => {
                   <button
                     type="button"
                     onClick={handleClearOAuthState}
-                    className="w-full text-sm text-gray-500 hover:text-gray-700 underline"
+                    className="w-full text-xs sm:text-sm text-gray-500 hover:text-gray-700 underline"
                   >
                     Clear OAuth State (if having issues)
                   </button>
                   <button
                     type="button"
                     onClick={handleDebugOAuth}
-                    className="w-full text-sm text-blue-500 hover:text-blue-700 underline"
+                    className="w-full text-xs sm:text-sm text-blue-500 hover:text-blue-700 underline"
                   >
                     Debug OAuth State
                   </button>
@@ -178,7 +177,7 @@ const Login = ({ onLogin }) => {
                   className="input-field"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">
                   Get your bot token from the Slack API dashboard
                 </p>
               </div>
@@ -202,13 +201,13 @@ const Login = ({ onLogin }) => {
 
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-600 text-sm">{error}</p>
+              <p className="text-red-600 text-xs sm:text-sm">{error}</p>
             </div>
           )}
 
           <div className="mt-8 pt-6 border-t border-gray-200">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Getting Started:</h3>
-            <div className="space-y-2 text-sm text-gray-600">
+            <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-3">Getting Started:</h3>
+            <div className="space-y-2 text-xs sm:text-sm text-gray-600">
               <div className="flex items-start">
                 <Shield className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                 <span>Create a Slack app in the Developer Sandbox</span>

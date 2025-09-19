@@ -35,10 +35,10 @@ const MessageList = ({ messages, onEdit, onDelete, loading }) => {
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {[...Array(3)].map((_, i) => (
           <div key={i} className="animate-pulse">
-            <div className="bg-gray-200 h-20 rounded-lg"></div>
+            <div className="bg-gray-200 h-16 sm:h-20 rounded-lg"></div>
           </div>
         ))}
       </div>
@@ -47,47 +47,48 @@ const MessageList = ({ messages, onEdit, onDelete, loading }) => {
 
   if (messages.length === 0) {
     return (
-      <div className="text-center py-12">
-        <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <p className="text-gray-500">No messages found</p>
+      <div className="text-center py-8 sm:py-12">
+        <MessageSquare className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+        <p className="text-sm sm:text-base text-gray-500">No messages found</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {messages.map((message) => (
-        <div key={message.ts} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+        <div key={message.ts} className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
           <div className="flex items-start justify-between mb-2">
-            <div className="flex items-center space-x-2">
-              <User className="h-4 w-4 text-gray-500" />
-              <span className="text-sm font-medium text-gray-900">
+            <div className="flex items-center space-x-2 min-w-0 flex-1">
+              <User className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500 flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">
                 {message.user || 'Unknown User'}
               </span>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 flex-shrink-0">
                 {formatTimestamp(message.ts)}
               </span>
             </div>
             
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
               {message.thread_ts && (
-                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                  Thread Reply
+                <span className="text-xs bg-blue-100 text-blue-800 px-1 sm:px-2 py-1 rounded">
+                  <span className="hidden sm:inline">Thread Reply</span>
+                  <span className="sm:hidden">Thread</span>
                 </span>
               )}
               <button
                 onClick={() => handleEditClick(message)}
-                className="text-gray-400 hover:text-blue-600 transition-colors"
+                className="text-gray-400 hover:text-blue-600 transition-colors p-1"
                 title="Edit message"
               >
-                <Edit3 className="h-4 w-4" />
+                <Edit3 className="h-3 w-3 sm:h-4 sm:w-4" />
               </button>
               <button
                 onClick={() => onDelete(message.ts)}
-                className="text-gray-400 hover:text-red-600 transition-colors"
+                className="text-gray-400 hover:text-red-600 transition-colors p-1"
                 title="Delete message"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
               </button>
             </div>
           </div>

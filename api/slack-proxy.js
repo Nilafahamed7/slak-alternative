@@ -24,12 +24,6 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Missing code or redirectUri for OAuth' })
       }
       
-      console.log('OAuth token exchange request:', {
-        code: code.substring(0, 10) + '...',
-        redirectUri,
-        clientId: process.env.VITE_SLACK_CLIENT_ID ? 'present' : 'missing',
-        clientSecret: process.env.VITE_SLACK_CLIENT_SECRET ? 'present' : 'missing'
-      })
       
       const oauthBody = new URLSearchParams({
         client_id: process.env.VITE_SLACK_CLIENT_ID,
@@ -48,11 +42,8 @@ export default async function handler(req, res) {
         })
         
         const data = await response.json()
-        console.log('OAuth response from Slack:', { ok: data.ok, error: data.error })
-        
         return res.status(200).json(data)
       } catch (error) {
-        console.error('OAuth proxy error:', error)
         return res.status(500).json({ error: 'OAuth token exchange failed', details: error.message })
       }
     }
@@ -95,8 +86,7 @@ export default async function handler(req, res) {
     const data = await response.json()
 
     res.status(200).json(data)
-  } catch (error) {
-    console.error('Proxy error:', error)
-    res.status(500).json({ error: 'Internal server error' })
-  }
+      } catch (error) {
+        res.status(500).json({ error: 'Internal server error' })
+      }
 }

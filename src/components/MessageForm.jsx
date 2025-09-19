@@ -53,9 +53,9 @@ const MessageForm = ({ onSubmit, loading, scheduled = false }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
       <div>
-        <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="message" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
           Message Text
         </label>
         <textarea
@@ -63,15 +63,15 @@ const MessageForm = ({ onSubmit, loading, scheduled = false }) => {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type your message here..."
-          rows={4}
-          className="input-field resize-none"
+          rows={3}
+          className="input-field resize-none text-sm"
           required
         />
       </div>
 
       {scheduled && (
         <div>
-          <label htmlFor="postAt" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="postAt" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
             Schedule for
           </label>
           <input
@@ -80,15 +80,15 @@ const MessageForm = ({ onSubmit, loading, scheduled = false }) => {
             value={postAt}
             onChange={(e) => setPostAt(e.target.value)}
             min={getMinDateTime()}
-            className="input-field"
+            className="input-field text-sm"
             required
           />
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         <div>
-          <label htmlFor="threadTs" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="threadTs" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
             Thread Timestamp (optional)
           </label>
           <input
@@ -97,7 +97,7 @@ const MessageForm = ({ onSubmit, loading, scheduled = false }) => {
             value={threadTs}
             onChange={(e) => setThreadTs(e.target.value)}
             placeholder="e.g., 1234567890.123456"
-            className="input-field"
+            className="input-field text-sm"
           />
           <p className="text-xs text-gray-500 mt-1">
             Reply to a specific message thread
@@ -105,7 +105,7 @@ const MessageForm = ({ onSubmit, loading, scheduled = false }) => {
         </div>
 
         <div>
-          <label htmlFor="blocks" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="blocks" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
             Blocks JSON (optional)
           </label>
           <textarea
@@ -113,8 +113,8 @@ const MessageForm = ({ onSubmit, loading, scheduled = false }) => {
             value={blocks}
             onChange={(e) => setBlocks(e.target.value)}
             placeholder='[{"type": "section", "text": {"type": "mrkdwn", "text": "Hello!"}}]'
-            rows={3}
-            className="input-field text-sm font-mono"
+            rows={2}
+            className="input-field text-sm font-mono resize-none"
           />
           <p className="text-xs text-gray-500 mt-1">
             Rich formatting using Slack blocks
@@ -122,34 +122,35 @@ const MessageForm = ({ onSubmit, loading, scheduled = false }) => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-        <div className="flex items-center space-x-2 text-sm text-gray-500">
-          <Paperclip className="h-4 w-4" />
-          <Smile className="h-4 w-4" />
-          <span>Rich formatting available</span>
+      <div className="flex flex-col sm:flex-row items-center justify-between pt-3 sm:pt-4 border-t border-gray-200 space-y-3 sm:space-y-0">
+        <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500">
+          <Paperclip className="h-3 w-3 sm:h-4 sm:w-4" />
+          <Smile className="h-3 w-3 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Rich formatting available</span>
+          <span className="sm:hidden">Rich formatting</span>
         </div>
         
         <button
           type="submit"
           disabled={loading || !text.trim()}
-          className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3 px-4 sm:px-6"
         >
           {loading ? (
             <div className="flex items-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              {scheduled ? 'Scheduling...' : 'Sending...'}
+              <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white mr-2"></div>
+              <span className="text-xs sm:text-sm">{scheduled ? 'Scheduling...' : 'Sending...'}</span>
             </div>
           ) : (
             <div className="flex items-center">
               {scheduled ? (
                 <>
-                  <Clock className="h-4 w-4 mr-2" />
-                  Schedule Message
+                  <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="text-xs sm:text-sm">Schedule Message</span>
                 </>
               ) : (
                 <>
-                  <Send className="h-4 w-4 mr-2" />
-                  Send Message
+                  <Send className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="text-xs sm:text-sm">Send Message</span>
                 </>
               )}
             </div>

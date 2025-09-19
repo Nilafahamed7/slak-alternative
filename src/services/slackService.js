@@ -63,7 +63,6 @@ export const clearOAuthState = () => {
   localStorage.removeItem('oauth_state')
   localStorage.removeItem('processed_oauth_code')
   localStorage.removeItem('oauth_retry_count')
-  console.log('Cleared OAuth state')
 }
 
 export const getOAuthRetryCount = () => {
@@ -90,7 +89,6 @@ export const initiateOAuth = () => {
   
   // Store state for verification
   localStorage.setItem('oauth_state', config.state)
-  console.log('Initiating OAuth with state:', config.state)
   
   // Redirect to Slack OAuth
   window.location.href = `${SLACK_OAUTH_URL}?${params.toString()}`
@@ -99,15 +97,9 @@ export const initiateOAuth = () => {
 export const exchangeCodeForToken = async (code, state) => {
   const storedState = localStorage.getItem('oauth_state')
   
-  console.log('Starting OAuth token exchange:', {
-    code: code ? `${code.substring(0, 10)}...` : 'missing',
-    state: state ? 'present' : 'missing',
-    storedState: storedState ? 'present' : 'missing'
-  })
-  
   // More flexible state validation - only check if we have a stored state
   if (storedState && state !== storedState) {
-    console.warn('State parameter mismatch, but continuing with OAuth flow')
+    // State mismatch, but continue with OAuth flow
   }
   
   const config = getOAuthConfig()
@@ -115,17 +107,14 @@ export const exchangeCodeForToken = async (code, state) => {
   // Check if we've already processed this code
   const processedCode = localStorage.getItem('processed_oauth_code')
   if (processedCode === code) {
-    console.error('OAuth code already processed:', code.substring(0, 10) + '...')
     throw new Error('OAuth code has already been used. Please try logging in again.')
   }
   
   // Mark this code as being processed
   localStorage.setItem('processed_oauth_code', code)
-  console.log('Marked OAuth code as being processed')
   
   try {
     // Use proxy for OAuth token exchange
-    console.log('Sending OAuth request to proxy...')
     const response = await fetch('/api/slack-proxy', {
       method: 'POST',
       headers: {
@@ -139,15 +128,12 @@ export const exchangeCodeForToken = async (code, state) => {
     })
     
     const data = await response.json()
-    console.log('OAuth response:', { ok: data.ok, error: data.error })
     
     if (!data.ok) {
       // Clean up processed code on error
       localStorage.removeItem('processed_oauth_code')
       
       if (data.error === 'invalid_code') {
-        console.error('Invalid code error from Slack - code expired or used')
-        // Don't throw error immediately, try to redirect to login instead
         throw new Error('OAuth code has expired. Please try logging in again.')
       }
       throw new Error(data.error || 'OAuth token exchange failed')
@@ -163,12 +149,10 @@ export const exchangeCodeForToken = async (code, state) => {
     localStorage.removeItem('oauth_state')
     localStorage.removeItem('processed_oauth_code')
     
-    console.log('OAuth token exchange successful')
     return data
   } catch (error) {
     // Clean up on any error
     localStorage.removeItem('processed_oauth_code')
-    console.error('OAuth token exchange failed:', error)
     throw error
   }
 }

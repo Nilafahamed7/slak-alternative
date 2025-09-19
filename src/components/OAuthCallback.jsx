@@ -14,7 +14,6 @@ const OAuthCallback = ({ onLogin }) => {
     const handleOAuthCallback = async () => {
       // Prevent multiple simultaneous processing
       if (isProcessing) {
-        console.log('OAuth callback already processing, skipping...')
         return
       }
       
@@ -25,15 +24,9 @@ const OAuthCallback = ({ onLogin }) => {
         const state = searchParams.get('state')
         const error = searchParams.get('error')
 
-        console.log('OAuth callback params:', { 
-          code: code ? `${code.substring(0, 10)}...` : 'missing', 
-          state: state ? 'present' : 'missing', 
-          error 
-        })
 
         // Check for OAuth errors first
         if (error) {
-          console.error('OAuth error from Slack:', error)
           setError(`OAuth error: ${error}`)
           setStatus('error')
           setTimeout(() => navigate('/login'), 3000)
@@ -42,7 +35,6 @@ const OAuthCallback = ({ onLogin }) => {
 
         // Check for missing code
         if (!code) {
-          console.error('Missing authorization code')
           setError('Missing authorization code')
           setStatus('error')
           setTimeout(() => navigate('/login'), 3000)
@@ -52,7 +44,6 @@ const OAuthCallback = ({ onLogin }) => {
         // Check if we've already processed this code
         const processedCode = localStorage.getItem('processed_oauth_code')
         if (processedCode === code) {
-          console.error('Code already processed, redirecting to login')
           setError('OAuth code has already been processed. Please try logging in again.')
           setStatus('error')
           setTimeout(() => navigate('/login'), 3000)
@@ -63,14 +54,12 @@ const OAuthCallback = ({ onLogin }) => {
         await new Promise(resolve => setTimeout(resolve, 500))
 
         // Exchange code for access token
-        console.log('Exchanging code for token...')
         const tokenData = await exchangeCodeForToken(code, state)
         
         if (!tokenData || !tokenData.access_token) {
           throw new Error('Invalid token response from Slack')
         }
 
-        console.log('Token exchange successful')
         setStatus('success')
         
         // Call onLogin with the access token
@@ -82,7 +71,6 @@ const OAuthCallback = ({ onLogin }) => {
         }, 1500)
 
       } catch (err) {
-        console.error('OAuth callback error:', err)
         
         // Handle specific error types
         let errorMessage = err.message
