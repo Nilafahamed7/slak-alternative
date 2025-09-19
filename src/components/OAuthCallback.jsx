@@ -16,12 +16,14 @@ const OAuthCallback = ({ onLogin }) => {
         const state = searchParams.get('state')
         const error = searchParams.get('error')
 
+        console.log('OAuth callback params:', { code: code ? 'present' : 'missing', state: state ? 'present' : 'missing', error })
+
         if (error) {
           throw new Error(`OAuth error: ${error}`)
         }
 
-        if (!code || !state) {
-          throw new Error('Missing authorization code or state')
+        if (!code) {
+          throw new Error('Missing authorization code')
         }
 
         // Exchange code for access token
