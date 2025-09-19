@@ -24,7 +24,6 @@ const OAuthCallback = ({ onLogin }) => {
         const state = searchParams.get('state')
         const error = searchParams.get('error')
 
-
         // Check for OAuth errors first
         if (error) {
           setError(`OAuth error: ${error}`)
@@ -50,28 +49,25 @@ const OAuthCallback = ({ onLogin }) => {
           return
         }
 
-        // Add a small delay to prevent flash
-        await new Promise(resolve => setTimeout(resolve, 500))
-
+        // If we have a valid code, show success immediately (optimistic UI)
+        setStatus('success')
+        
         // Exchange code for access token
         const tokenData = await exchangeCodeForToken(code, state)
         
         if (!tokenData || !tokenData.access_token) {
           throw new Error('Invalid token response from Slack')
         }
-
-        setStatus('success')
         
         // Call onLogin with the access token
         onLogin(tokenData.access_token)
         
-        // Redirect to dashboard after a short delay
+        // Redirect to dashboard very quickly
         setTimeout(() => {
           navigate('/dashboard')
-        }, 1500)
+        }, 500)
 
       } catch (err) {
-        
         // Handle specific error types
         let errorMessage = err.message
         if (err.message.includes('invalid_code') || err.message.includes('already been used') || err.message.includes('expired')) {
@@ -90,9 +86,8 @@ const OAuthCallback = ({ onLogin }) => {
       }
     }
 
-    // Add a small delay before starting to prevent race conditions
-    const timer = setTimeout(handleOAuthCallback, 100)
-    return () => clearTimeout(timer)
+    // Start immediately without delay
+    handleOAuthCallback()
   }, [searchParams, onLogin, navigate, isProcessing])
 
   return (
@@ -129,8 +124,7 @@ const OAuthCallback = ({ onLogin }) => {
                 Authentication Successful!
               </h2>
               <p className="text-gray-600">
-                You have been successfully authenticated with Slack.
-                Redirecting to dashboard...
+                Welcome! Redirecting to your dashboard...
               </p>
             </>
           )}
