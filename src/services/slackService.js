@@ -92,14 +92,8 @@ export const exchangeCodeForToken = async (code, state) => {
     },
     body: JSON.stringify({
       endpoint: '/oauth.v2.access',
-      method: 'POST',
-      body: {
-        client_id: config.clientId,
-        client_secret: import.meta.env.VITE_SLACK_CLIENT_SECRET || 'your-client-secret',
-        code: code,
-        redirect_uri: config.redirectUri
-      },
-      contentType: 'form'
+      code: code,
+      redirectUri: config.redirectUri
     })
   })
   

@@ -12,14 +12,39 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { endpoint, method = 'GET', body, token, contentType = 'json' } = req.body || {}
+    const { endpoint, method = 'GET', body, token, contentType = 'json', code, redirectUri } = req.body || {}
     
     if (!endpoint) {
       return res.status(400).json({ error: 'Missing endpoint' })
     }
 
-    // For OAuth token exchange, we don't need a token in the request
-    if (!token && endpoint !== '/oauth.v2.access') {
+    // Handle OAuth token exchange specially
+    if (endpoint === '/oauth.v2.access') {
+      if (!code || !redirectUri) {
+        return res.status(400).json({ error: 'Missing code or redirectUri for OAuth' })
+      }
+      
+      const oauthBody = new URLSearchParams({
+        client_id: process.env.VITE_SLACK_CLIENT_ID,
+        client_secret: process.env.VITE_SLACK_CLIENT_SECRET,
+        code: code,
+        redirect_uri: redirectUri
+      })
+      
+      const response = await fetch('https://slack.com/api/oauth.v2.access', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: oauthBody.toString()
+      })
+      
+      const data = await response.json()
+      return res.status(200).json(data)
+    }
+
+    // For other endpoints, we need a token
+    if (!token) {
       return res.status(400).json({ error: 'Missing token' })
     }
 
