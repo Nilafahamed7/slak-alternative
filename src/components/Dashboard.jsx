@@ -126,6 +126,7 @@ const Dashboard = ({ onLogout }) => {
   const tabs = [
     { id: 'send', label: 'Send Message', icon: Send },
     { id: 'schedule', label: 'Schedule Message', icon: Clock },
+    { id: 'messages', label: 'Messages', icon: MessageSquare },
     { id: 'channels', label: 'Manage Channels', icon: Hash }
   ]
 
@@ -238,6 +239,20 @@ const Dashboard = ({ onLogout }) => {
                     loading={loading}
                     scheduled={true}
                   />
+                )}
+
+                {activeTab === 'messages' && (
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Recent Messages
+                    </h3>
+                    <MessageList
+                      messages={messages}
+                      onEdit={handleEditMessage}
+                      onDelete={handleDeleteMessage}
+                      loading={loading}
+                    />
+                  </div>
                 )}
 
                 {activeTab === 'channels' && (
