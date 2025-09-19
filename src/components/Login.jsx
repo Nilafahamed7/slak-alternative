@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { MessageSquare, Shield, Zap, LogIn } from 'lucide-react'
-import { initiateOAuth } from '../services/slackService'
+import { initiateOAuth, clearOAuthState } from '../services/slackService'
 
 const Login = ({ onLogin }) => {
   const [token, setToken] = useState('')
@@ -12,11 +12,19 @@ const Login = ({ onLogin }) => {
     setLoading(true)
     setError('')
     try {
+      // Clear any existing OAuth state before starting
+      clearOAuthState()
       initiateOAuth()
     } catch (err) {
       setError('Failed to initiate OAuth: ' + err.message)
       setLoading(false)
     }
+  }
+
+  const handleClearOAuthState = () => {
+    clearOAuthState()
+    setError('')
+    alert('OAuth state cleared. You can now try logging in again.')
   }
 
   const handleTokenSubmit = async (e) => {
@@ -113,6 +121,14 @@ const Login = ({ onLogin }) => {
                       Connect with Slack
                     </div>
                   )}
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={handleClearOAuthState}
+                  className="w-full mt-2 text-sm text-gray-500 hover:text-gray-700 underline"
+                >
+                  Clear OAuth State (if having issues)
                 </button>
               </div>
             </div>
