@@ -15,6 +15,10 @@ const makeRequest = async (endpoint, options = {}) => {
   // Use our proxy API to avoid CORS issues
   const proxyUrl = '/api/slack-proxy'
   
+  // Determine content type based on endpoint
+  const isSlackAPI = endpoint.startsWith('/')
+  const contentType = (isSlackAPI && options.method !== 'GET') ? 'form' : 'json'
+  
   const config = {
     method: 'POST',
     headers: {
@@ -24,7 +28,8 @@ const makeRequest = async (endpoint, options = {}) => {
       endpoint,
       method: options.method || 'GET',
       body: options.body,
-      token
+      token,
+      contentType
     })
   }
 

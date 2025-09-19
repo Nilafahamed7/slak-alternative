@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { endpoint, method = 'GET', body, token } = req.body || {}
+    const { endpoint, method = 'GET', body, token, contentType = 'json' } = req.body || {}
     
     if (!endpoint) {
       return res.status(400).json({ error: 'Missing endpoint' })
@@ -28,12 +28,27 @@ export default async function handler(req, res) {
       method,
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
       },
     }
 
     if (body && method !== 'GET') {
-      options.body = JSON.stringify(body)
+      if (contentType === 'form') {
+        // Use form-encoded data for Slack API
+        options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        const formData = new URLSearchParams()
+        for (const [key, value] of Object.entries(body)) {
+          if (typeof value === 'object') {
+            formData.append(key, JSON.stringify(value))
+          } else {
+            formData.append(key, value)
+          }
+        }
+        options.body = formData.toString()
+      } else {
+        // Use JSON for other APIs
+        options.headers['Content-Type'] = 'application/json'
+        options.body = JSON.stringify(body)
+      }
     }
 
     const response = await fetch(url, options)
