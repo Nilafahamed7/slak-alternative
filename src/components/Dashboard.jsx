@@ -39,9 +39,15 @@ const Dashboard = ({ onLogout }) => {
       setChannels(response.channels || [])
       if (response.channels && response.channels.length > 0) {
         setSelectedChannel(response.channels[0].id)
+      } else {
+        // If no channels loaded, set a default channel ID for testing
+        setSelectedChannel('general')
+        setError('No channels found. Using default channel. You can manually enter a channel ID.')
       }
     } catch (err) {
-      setError('Failed to load channels: ' + err.message)
+      setError('Failed to load channels: ' + err.message + '. You can manually enter a channel ID.')
+      // Set a default channel for testing
+      setSelectedChannel('general')
     } finally {
       setLoading(false)
     }
@@ -174,6 +180,24 @@ const Dashboard = ({ onLogout }) => {
                 onChannelSelect={setSelectedChannel}
                 loading={loading}
               />
+              
+              {/* Manual Channel Input */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <label htmlFor="manualChannel" className="block text-sm font-medium text-gray-700 mb-2">
+                  Or enter channel ID manually:
+                </label>
+                <input
+                  type="text"
+                  id="manualChannel"
+                  value={selectedChannel}
+                  onChange={(e) => setSelectedChannel(e.target.value)}
+                  placeholder="e.g., general, C1234567890"
+                  className="input-field text-sm"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Use channel name (general) or channel ID (C1234567890)
+                </p>
+              </div>
             </div>
           </div>
 

@@ -198,7 +198,32 @@ export const deleteMessage = async (channel, ts) => {
 
 // Channel operations
 export const getChannels = async () => {
-  return makeRequest('/conversations.list?types=public_channel,private_channel')
+  try {
+    // Try multiple approaches to get channels
+    const approaches = [
+      '/conversations.list?types=public_channel,private_channel&limit=100',
+      '/conversations.list?types=public_channel&limit=100',
+      '/conversations.list?limit=100'
+    ]
+    
+    for (const endpoint of approaches) {
+      try {
+        const response = await makeRequest(endpoint)
+        if (response.channels && response.channels.length > 0) {
+          return response
+        }
+      } catch (err) {
+        console.log(`Failed with endpoint ${endpoint}:`, err.message)
+        continue
+      }
+    }
+    
+    // If all approaches fail, return empty array
+    return { channels: [] }
+  } catch (error) {
+    console.error('All channel fetch attempts failed:', error)
+    return { channels: [] }
+  }
 }
 
 export const getChannelHistory = async (channel, limit = 50) => {
