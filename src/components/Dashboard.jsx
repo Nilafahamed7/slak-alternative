@@ -256,29 +256,85 @@ const Dashboard = ({ onLogout }) => {
                 )}
 
                 {activeTab === 'channels' && (
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">
-                      Add Channel
-                    </h3>
-                    <div className="flex gap-4">
-                      <input
-                        type="text"
-                        value={newChannelId}
-                        onChange={(e) => setNewChannelId(e.target.value)}
-                        placeholder="Enter channel ID or name (e.g., #general, C1234567890)"
-                        className="flex-1 input-field"
-                      />
-                      <button
-                        onClick={handleAddChannel}
-                        className="btn-primary"
-                        disabled={loading}
-                      >
-                        Add Channel
-                      </button>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900 mb-4">
+                        Channel Management
+                      </h3>
+                      
+                      {/* Current Channels */}
+                      <div className="mb-6">
+                        <h4 className="text-md font-medium text-gray-800 mb-3">Available Channels</h4>
+                        {channels.length > 0 ? (
+                          <div className="space-y-2">
+                            {channels.map((channel) => (
+                              <div key={channel.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div className="flex items-center">
+                                  <Hash className="h-4 w-4 text-gray-500 mr-2" />
+                                  <span className="font-medium">{channel.name}</span>
+                                  {channel.is_private && (
+                                    <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Private</span>
+                                  )}
+                                </div>
+                                <button
+                                  onClick={() => setSelectedChannel(channel.id)}
+                                  className={`px-3 py-1 text-sm rounded ${
+                                    selectedChannel === channel.id
+                                      ? 'bg-vibrant-purple text-white'
+                                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                  }`}
+                                >
+                                  {selectedChannel === channel.id ? 'Active' : 'Select'}
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-gray-500 text-sm">No channels available. Add channels below or invite your bot to channels in Slack.</p>
+                        )}
+                      </div>
+
+                      {/* Add New Channel */}
+                      <div className="border-t pt-6">
+                        <h4 className="text-md font-medium text-gray-800 mb-3">Add New Channel</h4>
+                        <div className="flex gap-4">
+                          <input
+                            type="text"
+                            value={newChannelId}
+                            onChange={(e) => setNewChannelId(e.target.value)}
+                            placeholder="Enter channel ID (C1234567890) or name (#general)"
+                            className="flex-1 input-field"
+                          />
+                          <button
+                            onClick={handleAddChannel}
+                            className="btn-primary"
+                            disabled={loading}
+                          >
+                            Add Channel
+                          </button>
+                        </div>
+                        
+                        {/* Instructions */}
+                        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                          <h5 className="font-medium text-blue-900 mb-2">How to add channels:</h5>
+                          <div className="text-sm text-blue-800 space-y-1">
+                            <p><strong>Method 1:</strong> In Slack, type <code className="bg-blue-100 px-1 rounded">/invite @YourBotName</code> in any channel</p>
+                            <p><strong>Method 2:</strong> Enter channel ID (starts with C) or channel name (starts with #) above</p>
+                            <p><strong>Method 3:</strong> Click "Refresh Channels" to reload from Slack</p>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-4">
+                          <button
+                            onClick={loadChannels}
+                            className="btn-secondary"
+                            disabled={loading}
+                          >
+                            Refresh Channels
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600">
-                      Enter a channel ID (starts with C) or channel name (starts with #)
-                    </p>
                   </div>
                 )}
               </div>

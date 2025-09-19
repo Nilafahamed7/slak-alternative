@@ -47,7 +47,34 @@ In your app settings, go to "OAuth & Permissions":
 - `mpim:read` - List group direct messages
 - `users:read` - List users
 
-### 3. Get OAuth Credentials
+### 3. Install Your App
+
+1. Go to "Install App" in your Slack app settings
+2. Click "Install to Workspace"
+3. Authorize the permissions
+4. Copy the "Bot User OAuth Token" (starts with `xoxb-`)
+
+### 4. Set Up Channels
+
+After installing your app, you need to add it to channels:
+
+**Method 1: Invite Bot to Channels (Recommended)**
+1. In any Slack channel, type: `/invite @YourBotName`
+2. The bot will automatically appear in your app's channel list
+3. Click "Refresh Channels" in the app to see new channels
+
+**Method 2: Add Channels Manually**
+1. Go to "Manage Channels" tab in the app
+2. Enter channel ID (starts with C) or channel name (starts with #)
+3. Click "Add Channel"
+
+**Method 3: Use Channel IDs**
+1. Right-click on any channel in Slack
+2. Select "Copy link"
+3. Extract the channel ID from the URL (e.g., `C1234567890`)
+4. Add it manually in the app
+
+### 5. Get OAuth Credentials
 
 1. Copy your **Client ID** and **Client Secret** from the "Basic Information" section
 2. Create a `.env` file in your project root (see Environment Setup below)
@@ -215,6 +242,44 @@ VITE_SLACK_API_URL=https://slack.com/api
 3. **"Message not found" error:**
    - Verify the message timestamp is correct
    - Ensure the message exists in the channel
+
+## Sharing Your App with Others
+
+### For Each User:
+
+**Important:** Each user must create their own Slack app because:
+- **Security**: Users can't share OAuth credentials
+- **Permissions**: Each user needs to authorize their own workspace
+- **Channels**: Users need to invite the bot to their own channels
+
+### User Setup Process:
+
+1. **Create Their Own Slack App:**
+   - Go to [Slack API Dashboard](https://api.slack.com/apps)
+   - Create a new app for their workspace
+   - Follow the setup steps above
+
+2. **Configure Their Environment:**
+   - Get their own Client ID and Client Secret
+   - Set up their own `.env` file
+   - Install the app to their workspace
+
+3. **Add Their Channels:**
+   - Use the "Manage Channels" tab in your app
+   - Invite their bot to channels: `/invite @TheirBotName`
+   - Or add channels manually using channel IDs
+
+### Deployment Options:
+
+**Option 1: Self-Hosted**
+- Each user deploys their own instance
+- They use their own Slack app credentials
+- Complete privacy and control
+
+**Option 2: Shared Instance**
+- Deploy one instance (e.g., on Vercel)
+- Each user creates their own Slack app
+- They use the same app URL but different credentials
 
 ### Getting Help
 
