@@ -75,27 +75,29 @@ const Login = ({ onLogin }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slack-purple to-purple-600 flex items-center justify-center p-4 sm:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-vibrant-purple via-vibrant-pink to-vibrant-blue flex items-center justify-center p-4 sm:p-6">
       <div className="max-w-md w-full">
-        <div className="card p-6 sm:p-8">
+        <div className="card-colored p-6 sm:p-8 backdrop-blur-sm">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <MessageSquare className="h-12 w-12 text-slack-purple" />
+              <div className="p-3 bg-gradient-to-r from-vibrant-purple to-vibrant-pink rounded-full">
+                <MessageSquare className="h-12 w-12 text-white" />
+              </div>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Slack Alternative</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-vibrant-purple to-vibrant-pink bg-clip-text text-transparent mb-2">Slack Alternative</h1>
             <p className="text-sm sm:text-base text-gray-600">Connect to your Slack workspace</p>
           </div>
 
           {/* Authentication Method Toggle */}
           <div className="mb-6">
-            <div className="flex bg-gray-100 rounded-lg p-1">
+            <div className="flex bg-gradient-to-r from-vibrant-cyan/20 to-vibrant-blue/20 rounded-lg p-1">
               <button
                 type="button"
                 onClick={() => setAuthMethod('oauth')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
                   authMethod === 'oauth'
-                    ? 'bg-white text-slack-purple shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-gradient-to-r from-vibrant-purple to-vibrant-pink text-white shadow-lg transform scale-105'
+                    : 'text-gray-600 hover:text-vibrant-purple hover:bg-white/50'
                 }`}
               >
                 OAuth Login
@@ -103,10 +105,10 @@ const Login = ({ onLogin }) => {
               <button
                 type="button"
                 onClick={() => setAuthMethod('token')}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-300 ${
                   authMethod === 'token'
-                    ? 'bg-white text-slack-purple shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-gradient-to-r from-vibrant-purple to-vibrant-pink text-white shadow-lg transform scale-105'
+                    : 'text-gray-600 hover:text-vibrant-purple hover:bg-white/50'
                 }`}
               >
                 Bot Token
@@ -120,8 +122,8 @@ const Login = ({ onLogin }) => {
                 <p className="text-gray-600 mb-4">
                   Connect your Slack workspace securely using OAuth
                 </p>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                  <p className="text-xs sm:text-sm text-blue-700">
+                <div className="bg-gradient-to-r from-vibrant-cyan/10 to-vibrant-blue/10 border border-vibrant-cyan/30 rounded-lg p-3 mb-4">
+                  <p className="text-xs sm:text-sm text-vibrant-blue">
                     <strong>Note:</strong> OAuth codes expire quickly. If you get an "expired code" error, 
                     just click "Try Again" - this is normal!
                   </p>

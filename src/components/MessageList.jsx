@@ -56,36 +56,48 @@ const MessageList = ({ messages, onEdit, onDelete, loading }) => {
 
   return (
     <div className="space-y-3 sm:space-y-4">
-      {messages.map((message) => (
-        <div key={message.ts} className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+      {messages.map((message, index) => {
+        const colors = [
+          'bg-gradient-to-br from-vibrant-purple/10 to-vibrant-pink/10 border-vibrant-purple/20',
+          'bg-gradient-to-br from-vibrant-cyan/10 to-vibrant-blue/10 border-vibrant-cyan/20',
+          'bg-gradient-to-br from-vibrant-emerald/10 to-vibrant-teal/10 border-vibrant-emerald/20',
+          'bg-gradient-to-br from-vibrant-amber/10 to-vibrant-orange/10 border-vibrant-amber/20',
+          'bg-gradient-to-br from-vibrant-rose/10 to-vibrant-red/10 border-vibrant-rose/20'
+        ]
+        const colorClass = colors[index % colors.length]
+        
+        return (
+        <div key={message.ts} className={`${colorClass} rounded-xl p-3 sm:p-4 border shadow-md hover:shadow-lg transition-all duration-300`}>
           <div className="flex items-start justify-between mb-2">
             <div className="flex items-center space-x-2 min-w-0 flex-1">
-              <User className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500 flex-shrink-0" />
+              <div className="p-1 bg-gradient-to-r from-vibrant-purple to-vibrant-pink rounded-full">
+                <User className="h-2 w-2 sm:h-3 sm:w-3 text-white flex-shrink-0" />
+              </div>
               <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">
                 {message.user || 'Unknown User'}
               </span>
-              <span className="text-xs text-gray-500 flex-shrink-0">
+              <span className="text-xs text-vibrant-purple flex-shrink-0">
                 {formatTimestamp(message.ts)}
               </span>
             </div>
             
             <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
               {message.thread_ts && (
-                <span className="text-xs bg-blue-100 text-blue-800 px-1 sm:px-2 py-1 rounded">
+                <span className="text-xs bg-gradient-to-r from-vibrant-cyan to-vibrant-blue text-white px-1 sm:px-2 py-1 rounded-full">
                   <span className="hidden sm:inline">Thread Reply</span>
                   <span className="sm:hidden">Thread</span>
                 </span>
               )}
               <button
                 onClick={() => handleEditClick(message)}
-                className="text-gray-400 hover:text-blue-600 transition-colors p-1"
+                className="text-vibrant-blue hover:text-vibrant-purple transition-all duration-300 p-1 rounded-lg hover:bg-vibrant-blue/10"
                 title="Edit message"
               >
                 <Edit3 className="h-3 w-3 sm:h-4 sm:w-4" />
               </button>
               <button
                 onClick={() => onDelete(message.ts)}
-                className="text-gray-400 hover:text-red-600 transition-colors p-1"
+                className="text-vibrant-rose hover:text-vibrant-red transition-all duration-300 p-1 rounded-lg hover:bg-vibrant-rose/10"
                 title="Delete message"
               >
                 <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -152,7 +164,8 @@ const MessageList = ({ messages, onEdit, onDelete, loading }) => {
             )}
           </div>
         </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

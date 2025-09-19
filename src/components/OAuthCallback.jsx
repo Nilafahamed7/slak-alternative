@@ -96,21 +96,23 @@ const OAuthCallback = ({ onLogin }) => {
   }, [searchParams, onLogin, navigate, isProcessing])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slack-purple to-purple-600 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-vibrant-purple via-vibrant-pink to-vibrant-blue flex items-center justify-center p-4">
       <div className="max-w-md w-full">
-        <div className="card p-8 text-center">
+        <div className="card-colored p-8 text-center backdrop-blur-sm">
           {status === 'processing' && (
             <>
               <div className="flex justify-center mb-4">
-                <Loader className="h-12 w-12 text-slack-purple animate-spin" />
+                <div className="p-3 bg-gradient-to-r from-vibrant-purple to-vibrant-pink rounded-full">
+                  <Loader className="h-12 w-12 text-white animate-spin" />
+                </div>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-vibrant-purple to-vibrant-pink bg-clip-text text-transparent mb-2">
                 Completing Authentication
               </h2>
               <p className="text-gray-600">
                 Please wait while we complete your Slack authentication...
               </p>
-              <div className="mt-4 text-sm text-gray-500">
+              <div className="mt-4 text-sm text-vibrant-purple">
                 This may take a few seconds...
               </div>
             </>
@@ -119,9 +121,11 @@ const OAuthCallback = ({ onLogin }) => {
           {status === 'success' && (
             <>
               <div className="flex justify-center mb-4">
-                <CheckCircle className="h-12 w-12 text-green-500" />
+                <div className="p-3 bg-gradient-to-r from-vibrant-emerald to-vibrant-teal rounded-full">
+                  <CheckCircle className="h-12 w-12 text-white" />
+                </div>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-vibrant-emerald to-vibrant-teal bg-clip-text text-transparent mb-2">
                 Authentication Successful!
               </h2>
               <p className="text-gray-600">
@@ -134,9 +138,11 @@ const OAuthCallback = ({ onLogin }) => {
           {status === 'error' && (
             <>
               <div className="flex justify-center mb-4">
-                <XCircle className="h-12 w-12 text-red-500" />
+                <div className="p-3 bg-gradient-to-r from-vibrant-rose to-vibrant-red rounded-full">
+                  <XCircle className="h-12 w-12 text-white" />
+                </div>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-vibrant-rose to-vibrant-red bg-clip-text text-transparent mb-2">
                 Authentication Failed
               </h2>
               <p className="text-gray-600 mb-4">
@@ -152,7 +158,7 @@ const OAuthCallback = ({ onLogin }) => {
                 >
                   Try Again (Clear OAuth State)
                 </button>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-vibrant-purple">
                   Or wait to be redirected automatically...
                 </p>
               </div>

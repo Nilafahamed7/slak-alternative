@@ -122,8 +122,8 @@ const MessageForm = ({ onSubmit, loading, scheduled = false }) => {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between pt-3 sm:pt-4 border-t border-gray-200 space-y-3 sm:space-y-0">
-        <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500">
+      <div className="flex flex-col sm:flex-row items-center justify-between pt-3 sm:pt-4 border-t border-vibrant-purple/20 space-y-3 sm:space-y-0">
+        <div className="flex items-center space-x-2 text-xs sm:text-sm text-vibrant-purple">
           <Paperclip className="h-3 w-3 sm:h-4 sm:w-4" />
           <Smile className="h-3 w-3 sm:h-4 sm:w-4" />
           <span className="hidden sm:inline">Rich formatting available</span>
@@ -133,7 +133,11 @@ const MessageForm = ({ onSubmit, loading, scheduled = false }) => {
         <button
           type="submit"
           disabled={loading || !text.trim()}
-          className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3 px-4 sm:px-6"
+          className={`w-full sm:w-auto text-sm sm:text-base py-2 sm:py-3 px-4 sm:px-6 font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
+            scheduled 
+              ? 'bg-gradient-to-r from-vibrant-amber to-vibrant-orange hover:from-vibrant-orange hover:to-vibrant-amber text-white' 
+              : 'bg-gradient-to-r from-vibrant-purple to-vibrant-pink hover:from-vibrant-pink hover:to-vibrant-purple text-white'
+          }`}
         >
           {loading ? (
             <div className="flex items-center">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { LogOut, MessageSquare, Send, Clock, Edit3, Trash2, Search } from 'lucide-react'
+import { LogOut, MessageSquare, Send, Clock, Edit3, Trash2, Search, Plus, Hash } from 'lucide-react'
 import { 
   getChannels, 
   getChannelHistory, 
@@ -21,6 +21,7 @@ const Dashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('send')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
+  const [newChannelId, setNewChannelId] = useState('')
 
   useEffect(() => {
     loadChannels()
@@ -140,29 +141,57 @@ const Dashboard = ({ onLogout }) => {
     }
   }
 
+  const handleAddChannel = async () => {
+    if (!newChannelId.trim()) {
+      setError('Please enter a channel ID or name')
+      return
+    }
+
+    try {
+      setLoading(true)
+      // Test if the channel is accessible by trying to get its history
+      await getChannelHistory(newChannelId.trim(), 1)
+      
+      // If successful, add to selected channel
+      setSelectedChannel(newChannelId.trim())
+      setNewChannelId('')
+      setError('')
+      
+      // Reload channels to see if it appears in the list
+      await loadChannels()
+    } catch (err) {
+      setError(`Cannot access channel "${newChannelId}": ${err.message}. Make sure the bot is invited to this channel.`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const tabs = [
     { id: 'send', label: 'Send Message', icon: Send },
     { id: 'schedule', label: 'Schedule Message', icon: Clock },
     { id: 'search', label: 'Search Messages', icon: Search },
-    { id: 'manage', label: 'Manage Messages', icon: Edit3 }
+    { id: 'manage', label: 'Manage Messages', icon: Edit3 },
+    { id: 'channels', label: 'Manage Channels', icon: Hash }
   ]
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-vibrant-cyan/10 via-vibrant-purple/5 to-vibrant-pink/10">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-vibrant-purple/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
             <div className="flex items-center">
-              <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-slack-purple mr-2 sm:mr-3" />
-              <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
+              <div className="p-2 bg-gradient-to-r from-vibrant-purple to-vibrant-pink rounded-lg mr-2 sm:mr-3">
+                <MessageSquare className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
+              </div>
+              <h1 className="text-lg sm:text-xl font-semibold bg-gradient-to-r from-vibrant-purple to-vibrant-pink bg-clip-text text-transparent">
                 <span className="hidden sm:inline">Slack Alternative</span>
                 <span className="sm:hidden">Slack</span>
               </h1>
             </div>
             <button
               onClick={onLogout}
-              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors text-sm sm:text-base px-2 sm:px-3 py-1 sm:py-2"
+              className="flex items-center text-vibrant-rose hover:text-vibrant-red transition-all duration-300 text-sm sm:text-base px-2 sm:px-3 py-1 sm:py-2 rounded-lg hover:bg-vibrant-rose/10"
             >
               <LogOut className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Logout</span>
@@ -176,8 +205,8 @@ const Dashboard = ({ onLogout }) => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="card p-3 sm:p-4">
-              <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Channels</h2>
+            <div className="card-colored p-3 sm:p-4">
+              <h2 className="text-base sm:text-lg font-semibold bg-gradient-to-r from-vibrant-purple to-vibrant-pink bg-clip-text text-transparent mb-3 sm:mb-4">Channels</h2>
               <ChannelSelector
                 channels={channels}
                 selectedChannel={selectedChannel}
@@ -207,9 +236,9 @@ const Dashboard = ({ onLogout }) => {
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <div className="card">
+            <div className="card-colored">
               {/* Tabs */}
-              <div className="border-b border-gray-200">
+              <div className="border-b border-vibrant-purple/20">
                 <nav className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 overflow-x-auto">
                   {tabs.map((tab) => {
                     const Icon = tab.icon
@@ -217,10 +246,10 @@ const Dashboard = ({ onLogout }) => {
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
+                        className={`flex items-center py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-all duration-300 whitespace-nowrap ${
                           activeTab === tab.id
-                            ? 'border-slack-purple text-slack-purple'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            ? 'border-vibrant-purple text-vibrant-purple bg-gradient-to-r from-vibrant-purple/10 to-vibrant-pink/10'
+                            : 'border-transparent text-gray-500 hover:text-vibrant-purple hover:border-vibrant-purple/50 hover:bg-vibrant-purple/5'
                         }`}
                       >
                         <Icon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
