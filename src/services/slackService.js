@@ -6,20 +6,30 @@ const getAccessToken = () => localStorage.getItem('slack_access_token')
 const getRefreshToken = () => localStorage.getItem('slack_refresh_token')
 
 const makeRequest = async (endpoint, options = {}) => {
-  const url = `${BASE_URL}${endpoint}`
   const token = getAccessToken() || getToken()
   
+  if (!token) {
+    throw new Error('No authentication token found')
+  }
+
+  // Use our proxy API to avoid CORS issues
+  const proxyUrl = '/api/slack-proxy'
+  
   const config = {
+    method: 'POST',
     headers: {
-      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
-      ...options.headers
     },
-    ...options
+    body: JSON.stringify({
+      endpoint,
+      method: options.method || 'GET',
+      body: options.body,
+      token
+    })
   }
 
   try {
-    const response = await fetch(url, config)
+    const response = await fetch(proxyUrl, config)
     const data = await response.json()
     
     if (!data.ok) {
@@ -68,16 +78,22 @@ export const exchangeCodeForToken = async (code, state) => {
   }
   
   const config = getOAuthConfig()
-  const response = await fetch(`${BASE_URL}/oauth.v2.access`, {
+  
+  // Use proxy for OAuth token exchange
+  const response = await fetch('/api/slack-proxy', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'application/json',
     },
-    body: new URLSearchParams({
-      client_id: config.clientId,
-      client_secret: import.meta.env.VITE_SLACK_CLIENT_SECRET || 'your-client-secret',
-      code: code,
-      redirect_uri: config.redirectUri
+    body: JSON.stringify({
+      endpoint: '/oauth.v2.access',
+      method: 'POST',
+      body: {
+        client_id: config.clientId,
+        client_secret: import.meta.env.VITE_SLACK_CLIENT_SECRET || 'your-client-secret',
+        code: code,
+        redirect_uri: config.redirectUri
+      }
     })
   })
   
