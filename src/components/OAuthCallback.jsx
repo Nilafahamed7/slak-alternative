@@ -8,15 +8,28 @@ const OAuthCallback = ({ onLogin }) => {
   const navigate = useNavigate()
   const [status, setStatus] = useState('processing') // processing, success, error
   const [error, setError] = useState('')
+  const [isProcessing, setIsProcessing] = useState(false)
 
   useEffect(() => {
     const handleOAuthCallback = async () => {
+      // Prevent multiple simultaneous processing
+      if (isProcessing) {
+        console.log('OAuth callback already processing, skipping...')
+        return
+      }
+      
+      setIsProcessing(true)
+      
       try {
         const code = searchParams.get('code')
         const state = searchParams.get('state')
         const error = searchParams.get('error')
 
-        console.log('OAuth callback params:', { code: code ? 'present' : 'missing', state: state ? 'present' : 'missing', error })
+        console.log('OAuth callback params:', { 
+          code: code ? `${code.substring(0, 10)}...` : 'missing', 
+          state: state ? 'present' : 'missing', 
+          error 
+        })
 
         // Check for OAuth errors first
         if (error) {
@@ -31,6 +44,16 @@ const OAuthCallback = ({ onLogin }) => {
         if (!code) {
           console.error('Missing authorization code')
           setError('Missing authorization code')
+          setStatus('error')
+          setTimeout(() => navigate('/login'), 3000)
+          return
+        }
+
+        // Check if we've already processed this code
+        const processedCode = localStorage.getItem('processed_oauth_code')
+        if (processedCode === code) {
+          console.error('Code already processed, redirecting to login')
+          setError('OAuth code has already been processed. Please try logging in again.')
           setStatus('error')
           setTimeout(() => navigate('/login'), 3000)
           return
@@ -76,13 +99,15 @@ const OAuthCallback = ({ onLogin }) => {
         setTimeout(() => {
           navigate('/login')
         }, 3000)
+      } finally {
+        setIsProcessing(false)
       }
     }
 
     // Add a small delay before starting to prevent race conditions
     const timer = setTimeout(handleOAuthCallback, 100)
     return () => clearTimeout(timer)
-  }, [searchParams, onLogin, navigate])
+  }, [searchParams, onLogin, navigate, isProcessing])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slack-purple to-purple-600 flex items-center justify-center p-4">

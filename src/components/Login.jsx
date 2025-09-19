@@ -27,6 +27,22 @@ const Login = ({ onLogin }) => {
     alert('OAuth state cleared. You can now try logging in again.')
   }
 
+  const handleDebugOAuth = () => {
+    const oauthState = localStorage.getItem('oauth_state')
+    const processedCode = localStorage.getItem('processed_oauth_code')
+    const accessToken = localStorage.getItem('slack_access_token')
+    
+    const debugInfo = {
+      oauthState: oauthState || 'none',
+      processedCode: processedCode ? `${processedCode.substring(0, 10)}...` : 'none',
+      accessToken: accessToken ? `${accessToken.substring(0, 10)}...` : 'none',
+      clientId: import.meta.env.VITE_SLACK_CLIENT_ID ? 'present' : 'missing'
+    }
+    
+    console.log('OAuth Debug Info:', debugInfo)
+    alert(`OAuth Debug Info:\n${JSON.stringify(debugInfo, null, 2)}`)
+  }
+
   const handleTokenSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -123,13 +139,22 @@ const Login = ({ onLogin }) => {
                   )}
                 </button>
                 
-                <button
-                  type="button"
-                  onClick={handleClearOAuthState}
-                  className="w-full mt-2 text-sm text-gray-500 hover:text-gray-700 underline"
-                >
-                  Clear OAuth State (if having issues)
-                </button>
+                <div className="mt-2 space-y-1">
+                  <button
+                    type="button"
+                    onClick={handleClearOAuthState}
+                    className="w-full text-sm text-gray-500 hover:text-gray-700 underline"
+                  >
+                    Clear OAuth State (if having issues)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDebugOAuth}
+                    className="w-full text-sm text-blue-500 hover:text-blue-700 underline"
+                  >
+                    Debug OAuth State
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
