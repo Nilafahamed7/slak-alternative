@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { MessageSquare, Zap, LogIn } from 'lucide-react'
+import { MessageSquare, Zap, LogIn, Shield } from 'lucide-react'
 import { initiateOAuth, clearOAuthState } from '../services/slackService'
 
 const Login = ({ onLogin }) => {
@@ -77,7 +77,6 @@ const Login = ({ onLogin }) => {
                 </div>
               </div>
             </div>
-          </div>
 
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
