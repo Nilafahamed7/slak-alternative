@@ -165,7 +165,7 @@ export const sendMessage = async (channel, text, options = {}) => {
 
   return makeRequest('/chat.postMessage', {
     method: 'POST',
-    body: JSON.stringify(payload)
+    body: payload
   })
 }
 
@@ -179,7 +179,7 @@ export const scheduleMessage = async (channel, text, postAt, options = {}) => {
 
   return makeRequest('/chat.scheduleMessage', {
     method: 'POST',
-    body: JSON.stringify(payload)
+    body: payload
   })
 }
 
@@ -197,7 +197,7 @@ export const editMessage = async (channel, ts, text, options = {}) => {
 
   return makeRequest('/chat.update', {
     method: 'POST',
-    body: JSON.stringify(payload)
+    body: payload
   })
 }
 
@@ -209,7 +209,7 @@ export const deleteMessage = async (channel, ts) => {
 
   return makeRequest('/chat.delete', {
     method: 'POST',
-    body: JSON.stringify(payload)
+    body: payload
   })
 }
 
